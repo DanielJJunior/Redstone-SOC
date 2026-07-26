@@ -1,0 +1,1 @@
+print('⛏️ Redstone SOC initialized successfully!')

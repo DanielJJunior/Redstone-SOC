@@ -1,0 +1,22 @@
+# Virtual Environment
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+logs/
+
+# Alerts
+alerts/
+
+# Reports
+reports/
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
