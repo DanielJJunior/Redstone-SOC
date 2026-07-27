@@ -1,22 +1,72 @@
+from unittest import result
+
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+
+from datetime import datetime
 import time
 
+from src.file_analyzer import FileAnalyzer
+from src.utils import format_size
+from src.detection_engine import DetectionEngine
+
+# ==========================================
+# Initialize Analyzer
+# ==========================================
+
+analyzer = FileAnalyzer()
+detector = DetectionEngine()
+
+# ==========================================
+# Banner
+# ==========================================
+
+def print_banner():
+    print("\n========================================")
+    print("⛏️  REDSTONE SOC")
+    print("========================================")
+
+
+# ==========================================
+# Observer Block
+# ==========================================
 
 class ObserverBlock(FileSystemEventHandler):
 
     def on_created(self, event):
 
+        # Ignore folders
         if event.is_directory:
             return
 
-        print("\n==============================")
-        print("⛏️  Redstone SOC")
-        print("==============================")
-        print("👀 Observer Block detected a new file!")
-        print(f"📄 File: {event.src_path}")
-        print("==============================\n")
+        # Analyze file
+        info = analyzer.analyze(event.src_path)
+        result = detector.analyze(info)
 
+        # Current detection time
+        detection_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Display
+        print_banner()
+
+        print("👀 Observer Block Activated!\n")
+
+        print(f"🕒 Detection : {detection_time}")
+        print(f"📄 Name      : {info['name']}")
+        print(f"📂 Extension : {info['extension']}")
+        print(f"📦 Size      : {format_size(info['size'])}")
+        print(f"📍 Path      : {info['path']}")
+        print(f"🗓️ Created   : {info['created']}")
+        print(f"🚨 Status    : {result['status']}")
+        print(f"⚠️ Severity : {result['severity']}")
+        print(f"💬 Reason    : {result['reason']}")
+
+        print("\n========================================\n")
+
+
+# ==========================================
+# Start Observer
+# ==========================================
 
 def start_observer(path):
 
@@ -24,20 +74,24 @@ def start_observer(path):
 
     observer = Observer()
 
-    observer.schedule(event_handler, path, recursive=False)
+    observer.schedule(
+        event_handler,
+        path,
+        recursive=False
+    )
 
     observer.start()
 
     print("🟢 Redstone Observer is running...")
     print(f"📁 Monitoring folder: {path}")
+    print("⏳ Waiting for new files...\n")
 
     try:
-
         while True:
             time.sleep(1)
 
     except KeyboardInterrupt:
-
+        print("\n🛑 Stopping Redstone SOC...")
         observer.stop()
 
     observer.join()
