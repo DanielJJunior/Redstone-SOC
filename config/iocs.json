@@ -1,0 +1,49 @@
+{
+    "filenames": [
+        {
+            "name": "mimikatz.exe",
+            "family": "Credential Dumping",
+            "severity": "CRITICAL"
+        },
+        {
+            "name": "nc.exe",
+            "family": "Netcat",
+            "severity": "HIGH"
+        },
+        {
+            "name": "nmap.exe",
+            "family": "Reconnaissance",
+            "severity": "HIGH"
+        },
+        {
+            "name": "psexec.exe",
+            "family": "Lateral Movement",
+            "severity": "CRITICAL"
+        }
+    ],
+
+    "extensions": [
+        ".exe",
+        ".dll",
+        ".ps1",
+        ".bat",
+        ".vbs"
+    ],
+
+    "safe_extensions": [
+        ".txt",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".pdf",
+        ".docx"
+    ],
+
+    "hashes":[
+        {
+            "sha256":"1234567890abcdef",
+            "family":"Mimikatz",
+            "severity":"CRITICAL"
+        }
+    ]
+}

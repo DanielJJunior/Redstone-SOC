@@ -46,7 +46,10 @@ class ObserverBlock(FileSystemEventHandler):
         # Analyze file
         info = analyzer.analyze(event.src_path)
         sha256 = hash_engine.calculate_sha256(event.src_path)
-        result = detector.analyze(info)
+        result = detector.analyze(
+        info,
+        sha256
+        )
 
         alert_file = alert_engine.generate_alert(
         info,

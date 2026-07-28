@@ -1,58 +1,52 @@
-from pathlib import Path
-
+from src.threat_intelligence import ThreatIntelligence
 
 class DetectionEngine:
-    
-    SUSPICIOUS_FILES = [
-        "mimikatz.exe",
-        "nc.exe",
-        "nmap.exe",
-        "psexec.exe",
-        "procdump.exe"
-    ]
 
-    HIGH_RISK_EXTENSIONS = [
-        ".exe",
-        ".dll",
-        ".ps1",
-        ".bat",
-        ".vbs"
-    ]
+    def __init__(self):
+        self.ti = ThreatIntelligence()
 
-    SAFE_EXTENSIONS = [
-        ".txt",
-        ".pdf",
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".docx"
-    ]
+    def analyze(self, file_info, sha256):
 
-    def analyze(self, file_info):
+        filename = file_info["name"]
+        extension = file_info["extension"]
 
-        filename = file_info["name"].lower()
-        extension = file_info["extension"].lower()
+        # 1 - Verifica HASH 
 
-        # IOC by filename
-        if filename in self.SUSPICIOUS_FILES:
+        hash_ioc = self.ti.hash_lookup(sha256)
+
+        if hash_ioc:
 
             return {
-                "severity": "CRITICAL",
-                "status": "IOC Detected",
-                "reason": "Known malicious tool"
+                "severity": hash_ioc["severity"],
+                "status": "Hash Match",
+                "reason": hash_ioc["family"]
             }
 
-        # IOC by extension
-        if extension in self.HIGH_RISK_EXTENSIONS:
+        # 2 - Verifica NOME DO ARQUIVO
+
+        ioc = self.ti.filename_lookup(filename)
+
+        if ioc:
+
+            return {
+                "severity": ioc["severity"],
+                "status": "IOC Detected",
+                "reason": ioc["family"]
+            }
+
+        # 3 - Verifica EXTENSÃO
+
+        if self.ti.extension_lookup(extension):
 
             return {
                 "severity": "HIGH",
                 "status": "Executable File",
-                "reason": "Executable extension detected"
+                "reason": "Potentially dangerous extension"
             }
 
-        # Known safe
-        if extension in self.SAFE_EXTENSIONS:
+        # 4 - Verifica EXTENSÃO SEGURA
+
+        if self.ti.safe_extension_lookup(extension):
 
             return {
                 "severity": "INFO",
@@ -60,8 +54,21 @@ class DetectionEngine:
                 "reason": "Known safe extension"
             }
 
+        # 5 - DESCONHECIDO
+
         return {
             "severity": "MEDIUM",
             "status": "Unknown File",
             "reason": "Unknown extension"
         }
+    @staticmethod
+    def severity_icon(severity):
+
+        icons = {
+            "INFO": "🟢",
+            "MEDIUM": "🟡",
+            "HIGH": "🟠",
+            "CRITICAL": "🔴"
+        }
+
+        return icons.get(severity, "⚪")
