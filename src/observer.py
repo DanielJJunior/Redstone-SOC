@@ -1,6 +1,7 @@
 from unittest import result
-
+from src.hash_engine import HashEngine
 from watchdog.observers import Observer
+hash_engine = HashEngine()
 from watchdog.events import FileSystemEventHandler
 
 from datetime import datetime
@@ -41,6 +42,7 @@ class ObserverBlock(FileSystemEventHandler):
 
         # Analyze file
         info = analyzer.analyze(event.src_path)
+        sha256 = hash_engine.calculate_sha256(event.src_path)
         result = detector.analyze(info)
 
         # Current detection time
@@ -55,6 +57,7 @@ class ObserverBlock(FileSystemEventHandler):
         print(f"📄 Name      : {info['name']}")
         print(f"📂 Extension : {info['extension']}")
         print(f"📦 Size      : {format_size(info['size'])}")
+        print(f"🔐 SHA256    : {sha256[:16]}...")
         print(f"📍 Path      : {info['path']}")
         print(f"🗓️ Created   : {info['created']}")
         print(f"🚨 Status    : {result['status']}")
