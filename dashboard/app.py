@@ -23,61 +23,80 @@ st.divider()
 # Metrics
 # ==========================================
 
-col1, col2, col3, col4 = st.columns(4)
+c1, c2, c3, c4 = st.columns(4)
 
-col1.metric("🔴 Critical", stats["CRITICAL"])
-col2.metric("🟠 High", stats["HIGH"])
-col3.metric("🟡 Medium", stats["MEDIUM"])
-col4.metric("🟢 Safe", stats["INFO"])
+c1.metric("🔴 Critical", stats["CRITICAL"])
+c2.metric("🟠 High", stats["HIGH"])
+c3.metric("🟡 Medium", stats["MEDIUM"])
+c4.metric("🟢 Safe", stats["INFO"])
 
 st.divider()
 
 # ==========================================
-# Charts
+# Search
 # ==========================================
 
-st.subheader("📊 Alert Statistics")
-
-chart_data = pd.DataFrame({
-    "Severity": list(stats.keys()),
-    "Alerts": list(stats.values())
-})
-
-st.bar_chart(
-    chart_data.set_index("Severity")
+search = st.text_input(
+    "🔍 Search filename"
 )
 
-st.divider()
+table = pd.DataFrame(alerts)
+
+if not table.empty and search:
+
+    table = table[
+        table["file_name"].str.contains(
+            search,
+            case=False,
+            na=False
+        )
+    ]
 
 # ==========================================
-# Table
+# Alert List
 # ==========================================
 
-st.subheader("📄 Recent Alerts")
+st.subheader("📄 Alerts")
 
-if len(alerts) == 0:
+if table.empty:
 
-    st.info("No alerts generated yet.")
+    st.info("No alerts found.")
 
 else:
 
-    search = st.text_input(
-        "🔍 Search filename"
+    files = table["file_name"].tolist()
+
+    selected = st.selectbox(
+        "Select an alert",
+        files
     )
 
-    table = pd.DataFrame(alerts)
-
-    if search:
-
-        table = table[
-            table["file_name"].str.contains(
-                search,
-                case=False
-            )
-        ]
+    alert = table[
+        table["file_name"] == selected
+    ].iloc[0]
 
     st.dataframe(
         table,
         use_container_width=True,
         hide_index=True
     )
+
+    st.divider()
+
+    st.subheader("🚨 Threat Details")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.write(f"**📄 File:** {alert['file_name']}")
+        st.write(f"**🚨 Severity:** {alert['severity']}")
+        st.write(f"**📌 Status:** {alert['status']}")
+        st.write(f"**💬 Reason:** {alert['reason']}")
+
+    with col2:
+
+        st.write(f"**🕒 Timestamp:** {alert['timestamp']}")
+        st.write(f"**🔐 SHA256:** {alert['sha256']}")
+        st.write(f"**📂 Path:** {alert['path']}")
+        st.write(f"**📦 Size:** {alert['size']} bytes")
