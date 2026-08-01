@@ -1,4 +1,5 @@
 import hashlib
+import time
 
 
 class HashEngine:
@@ -6,11 +7,21 @@ class HashEngine:
     @staticmethod
     def calculate_sha256(file_path):
 
-        sha256 = hashlib.sha256()
+        for _ in range(5):
 
-        with open(file_path, "rb") as file:
+            try:
 
-            while chunk := file.read(4096):
-                sha256.update(chunk)
+                sha256 = hashlib.sha256()
 
-        return sha256.hexdigest()
+                with open(file_path, "rb") as file:
+
+                    while chunk := file.read(4096):
+                        sha256.update(chunk)
+
+                return sha256.hexdigest()
+
+            except (PermissionError, FileNotFoundError, OSError):
+
+                time.sleep(0.2)
+
+        return "HASH_ERROR"

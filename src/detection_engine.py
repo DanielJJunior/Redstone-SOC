@@ -29,10 +29,12 @@ class DetectionEngine:
         if ioc:
 
             return {
-                "severity": ioc["severity"],
-                "status": "IOC Detected",
-                "reason": ioc["family"]
-            }
+            "severity": ioc["severity"],
+            "status": "IOC Detected",
+            "reason": ioc["family"],
+            "mitre": ioc["mitre"],
+            "recommendation": ioc["recommendation"]
+        }
 
         # 3 - Verifica EXTENSÃO
 

@@ -3,22 +3,30 @@
         {
             "name": "mimikatz.exe",
             "family": "Credential Dumping",
-            "severity": "CRITICAL"
+            "severity": "CRITICAL",
+            "mitre": "T1003",
+            "recommendation": "Immediately isolate the affected host and investigate credential theft."
         },
         {
             "name": "nc.exe",
             "family": "Netcat",
-            "severity": "HIGH"
+            "severity": "HIGH",
+            "mitre": "T1105",
+            "recommendation": "Verify whether the process is legitimate and inspect active network connections."
         },
         {
             "name": "nmap.exe",
             "family": "Reconnaissance",
-            "severity": "HIGH"
+            "severity": "HIGH",
+            "mitre": "T1595",
+            "recommendation": "Check if the scan was authorized. Review the source host."
         },
         {
             "name": "psexec.exe",
             "family": "Lateral Movement",
-            "severity": "CRITICAL"
+            "severity": "CRITICAL",
+            "mitre": "T1021",
+            "recommendation": "Investigate remote execution activity and isolate the endpoint if necessary."
         }
     ],
 
@@ -43,7 +51,9 @@
         {
             "sha256":"1234567890abcdef",
             "family":"Mimikatz",
-            "severity":"CRITICAL"
+            "severity":"CRITICAL",
+            "mitre":"T1003",
+            "recommendation":"Immediately isolate the host and investigate credential theft."
         }
     ]
 }

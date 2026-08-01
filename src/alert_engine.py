@@ -32,7 +32,11 @@ class AlertEngine:
 
             "reason": detection["reason"],
 
-            "path": info["path"]
+            "path": info["path"],
+
+            "mitre": detection["mitre"],
+            
+"recommendation": detection["recommendation"]
         }
 
         filename = f"alert_{timestamp.strftime('%Y%m%d_%H%M%S')}.json"

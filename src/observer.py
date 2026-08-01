@@ -8,18 +8,16 @@ from src.alert_engine import AlertEngine
 from src.detection_engine import DetectionEngine
 from src.file_analyzer import FileAnalyzer
 from src.hash_engine import HashEngine
+from src.utils import format_size
+
+# ==========================================
+# Initialize Engines
+# ==========================================
+
 analyzer = FileAnalyzer()
 detector = DetectionEngine()
 hash_engine = HashEngine()
 alert_engine = AlertEngine()
-from src.utils import format_size
-
-# ==========================================
-# Initialize Analyzer
-# ==========================================
-
-analyzer = FileAnalyzer()
-detector = DetectionEngine()
 
 # ==========================================
 # Banner
@@ -46,16 +44,18 @@ class ObserverBlock(FileSystemEventHandler):
         # Analyze file
         info = analyzer.analyze(event.src_path)
         sha256 = hash_engine.calculate_sha256(event.src_path)
+
         result = detector.analyze(
-        info,
-        sha256
+            info,
+            sha256
         )
 
         alert_file = alert_engine.generate_alert(
-        info,
-        result,
-        sha256)
-        # Current detection time
+            info,
+            result,
+            sha256
+        )
+
         detection_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Display
@@ -71,9 +71,13 @@ class ObserverBlock(FileSystemEventHandler):
         print(f"📍 Path      : {info['path']}")
         print(f"🗓️ Created   : {info['created']}")
         print(f"🚨 Status    : {result['status']}")
-        print(f"⚠️ Severity : {result['severity']}")
+        print(f"⚠️ Severity  : {result['severity']}")
         print(f"📄 Alert     : {alert_file}")
         print(f"💬 Reason    : {result['reason']}")
+
+        # New fields (Day 14)
+        print(f"🎯 MITRE     : {result.get('mitre', 'N/A')}")
+        print(f"🛡 Recommendation : {result.get('recommendation', 'N/A')}")
 
         print("\n========================================\n")
 
