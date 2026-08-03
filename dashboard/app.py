@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
 
 from dashboard_utils import DashboardLoader
 
@@ -23,12 +24,16 @@ st.divider()
 # Metrics
 # ==========================================
 
-c1, c2, c3, c4 = st.columns(4)
+scores = [a.get("threat_score", 0) for a in alerts]
+avg_score = round(sum(scores) / len(scores), 1) if scores else 0
+
+c1, c2, c3, c4, c5 = st.columns(5)
 
 c1.metric("🔴 Critical", stats.get("CRITICAL", 0))
 c2.metric("🟠 High", stats.get("HIGH", 0))
 c3.metric("🟡 Medium", stats.get("MEDIUM", 0))
 c4.metric("🟢 Safe", stats.get("INFO", 0))
+c5.metric("📊 Avg Score", f"{avg_score}/100")
 
 st.divider()
 
@@ -142,6 +147,41 @@ else:
         st.write(f"**🔐 SHA256:** {alert['sha256']}")
         st.write(f"**📂 Path:** {alert['path']}")
         st.write(f"**📦 Size:** {alert['size']} bytes")
+
+    st.divider()
+
+    # ==========================================
+    # Threat Score Gauge (Redstone Power Level)
+    # ==========================================
+
+    st.subheader("⚡ Redstone Power Level (Threat Score)")
+
+    threat_score = alert.get("threat_score", 0)
+    if pd.isna(threat_score):
+        threat_score = 0
+
+    gauge = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=threat_score,
+        number={"suffix": " / 100"},
+        gauge={
+            "axis": {"range": [0, 100]},
+            "bar": {"color": "#8B0000"},
+            "steps": [
+                {"range": [0, 30], "color": "#3ba55d"},
+                {"range": [30, 60], "color": "#f1c40f"},
+                {"range": [60, 80], "color": "#e67e22"},
+                {"range": [80, 100], "color": "#e74c3c"}
+            ]
+        }
+    ))
+
+    gauge.update_layout(
+        height=280,
+        margin=dict(t=30, b=10, l=30, r=30)
+    )
+
+    st.plotly_chart(gauge, use_container_width=True)
 
     st.divider()
 

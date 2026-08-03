@@ -32,11 +32,16 @@ class AlertEngine:
 
             "reason": detection["reason"],
 
+            "threat_score": detection.get("threat_score", 0),
+
             "path": info["path"],
 
-            "mitre": detection["mitre"],
-            
-"recommendation": detection["recommendation"]
+            "mitre": detection.get("mitre", "N/A"),
+
+            "recommendation": detection.get(
+                "recommendation",
+                "No recommendation available."
+            )
         }
 
         filename = f"alert_{timestamp.strftime('%Y%m%d_%H%M%S')}.json"
@@ -46,11 +51,8 @@ class AlertEngine:
         with open(output, "w", encoding="utf-8") as file:
             json.dump(alert, file, indent=4)
 
-            history = self.alert_folder / "history.log"
+        history = self.alert_folder / "history.log"
 
-            print("History path:")
-            print(history.resolve())
-            
         with open(history, "a", encoding="utf-8") as log:
             log.write(
                 f"[{alert['timestamp']}] "

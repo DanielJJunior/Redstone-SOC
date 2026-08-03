@@ -72,6 +72,7 @@ class ObserverBlock(FileSystemEventHandler):
         print(f"🗓️ Created   : {info['created']}")
         print(f"🚨 Status    : {result['status']}")
         print(f"⚠️ Severity  : {result['severity']}")
+        print(f"📊 Threat Score : {result.get('threat_score', 'N/A')}/100")
         print(f"📄 Alert     : {alert_file}")
         print(f"💬 Reason    : {result['reason']}")
 
