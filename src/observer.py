@@ -8,6 +8,7 @@ from src.alert_engine import AlertEngine
 from src.detection_engine import DetectionEngine
 from src.file_analyzer import FileAnalyzer
 from src.hash_engine import HashEngine
+from src.notifier import DiscordNotifier
 from src.utils import format_size
 
 # ==========================================
@@ -18,6 +19,9 @@ analyzer = FileAnalyzer()
 detector = DetectionEngine()
 hash_engine = HashEngine()
 alert_engine = AlertEngine()
+notifier = DiscordNotifier()
+
+NOTIFY_SEVERITIES = ("HIGH", "CRITICAL")
 
 # ==========================================
 # Banner
@@ -50,7 +54,7 @@ class ObserverBlock(FileSystemEventHandler):
             sha256
         )
 
-        alert_file = alert_engine.generate_alert(
+        alert_file, alert_data = alert_engine.generate_alert(
             info,
             result,
             sha256
@@ -80,6 +84,13 @@ class ObserverBlock(FileSystemEventHandler):
         print(f"🎯 MITRE     : {result.get('mitre', 'N/A')}")
         print(f"🛡 Recommendation : {result.get('recommendation', 'N/A')}")
 
+        # Creeper Alert - Discord notification (Day 18)
+        if result["severity"] in NOTIFY_SEVERITIES and notifier.is_enabled():
+
+            sent = notifier.send_alert(alert_data)
+
+            print(f"📨 Discord Notification : {'Sent ✅' if sent else 'Failed ❌'}")
+
         print("\n========================================\n")
 
 
@@ -103,6 +114,12 @@ def start_observer(path):
 
     print("🟢 Redstone Observer is running...")
     print(f"📁 Monitoring folder: {path}")
+
+    if notifier.is_enabled():
+        print("📨 Discord notifications: ENABLED")
+    else:
+        print("📨 Discord notifications: disabled (no webhook configured)")
+
     print("⏳ Waiting for new files...\n")
 
     try:

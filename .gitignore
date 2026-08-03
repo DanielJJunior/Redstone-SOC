@@ -21,14 +21,5 @@ reports/
 .DS_Store
 Thumbs.db
 
-.venv/
-
-__pycache__/
-
-*.pyc
-
-alerts/
-
-logs/
-
-reports/
+# Secrets
+config/settings.json

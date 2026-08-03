@@ -60,4 +60,4 @@ class AlertEngine:
                 f"{alert['file_name']}\n"
             )
 
-        return output
+        return output, alert
