@@ -1,355 +1,179 @@
 # ⛏️ Redstone SOC
 
-> 🇧🇷 Português abaixo • 🇺🇸 English below
+<p align="center">
+  <img src="assets/banner.png" alt="Redstone SOC Banner" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white">
+  <img src="https://img.shields.io/badge/License-MIT-green">
+  <img src="https://img.shields.io/badge/Status-Active-brightgreen">
+</p>
+
+<p align="center">
+  🇧🇷 <a href="README.pt-BR.md">Leia em Português</a>
+</p>
+
+A lightweight, Minecraft-inspired **Security Operations Center (SOC)** and **File Integrity/Threat Detection Engine** built in Python.
+
+Redstone SOC simulates real-world Blue Team and SecOps concepts — real-time file monitoring, hash analysis, Threat Intelligence lookup, MITRE ATT&CK mapping, external enrichment, and a full analyst dashboard — all wrapped in a Minecraft-themed architecture.
 
 ---
 
-# 🇧🇷 Português
+## 🎯 Project Goal
 
-## 🛡️ Redstone SOC
+The primary goal of **Redstone SOC** is to practice and demonstrate hands-on concepts in:
 
-O **Redstone SOC** é um projeto pessoal desenvolvido em Python, inspirado no universo de **Minecraft**, criado com o objetivo de praticar e demonstrar conhecimentos em **Segurança da Informação**, **Blue Team**, **Security Operations Center (SOC)** e **Detection Engineering**.
-
-O projeto monitora diretórios em tempo real, identifica arquivos potencialmente maliciosos utilizando técnicas de Threat Intelligence, calcula hashes SHA-256, gera alertas estruturados em JSON e apresenta todas as informações em um Dashboard desenvolvido com Streamlit.
-
-Todo o projeto foi desenvolvido utilizando apenas tecnologias gratuitas, com foco em aprendizado, organização de código e demonstração prática de conceitos utilizados em SOCs modernos.
-
----
-
-# 🎯 Objetivos
-
-- Praticar conceitos de Blue Team e SOC.
-- Desenvolver habilidades em Python aplicadas à Segurança da Informação.
-- Demonstrar conhecimentos em Detection Engineering.
-- Construir um projeto autoral para portfólio.
-- Evoluir continuamente o projeto com novas funcionalidades.
+* **Detection Engineering** — catching malicious samples and IOCs (Indicators of Compromise) automatically, layered by confidence (hash → filename → extension).
+* **Security Operations & Automation** — monitoring file system events, scoring risk, and structuring JSON alerts.
+* **Threat Intelligence & Enrichment** — mapping detections to MITRE ATT&CK and optionally cross-checking hashes against VirusTotal.
+* **Software Architecture** — building modular, decoupled, and maintainable Python code for security tooling.
 
 ---
 
-# ✨ Funcionalidades
+## ✨ Features
 
-- ✅ Monitoramento de diretórios em tempo real
-- ✅ Observer baseado em Watchdog
-- ✅ Análise automática de arquivos
-- ✅ Cálculo de Hash SHA-256
-- ✅ Detecção por Nome do Arquivo
-- ✅ Detecção por Hash
-- ✅ Detecção por Extensão
-- ✅ Threat Intelligence desacoplada
-- ✅ Base de IOCs em JSON
-- ✅ Mapeamento MITRE ATT&CK
-- ✅ Recomendações de resposta ao incidente
-- ✅ Geração automática de Alertas JSON
-- ✅ Histórico de Alertas
-- ✅ Dashboard em Streamlit
-- ✅ Busca de Alertas
-- ✅ Timeline de Eventos
-- ✅ Métricas por Severidade
-- ✅ Visualização detalhada de Alertas
+### 🔎 Detection Engine
+- **Redstone Observer** — real-time file system monitoring via `watchdog`.
+- **Automated SHA-256 Hashing** with retry handling for locked files.
+- **Layered IOC Detection** — hash match → known filename → dangerous extension → safe extension → unknown.
+- **Threat Score ("Redstone Power Level")** — a 0–100 risk score combining severity with detection-method confidence.
+- **MITRE ATT&CK Mapping & Recommendations** for every detection.
+- **Structured JSON Alerts** with full metadata, timestamps, severity, and reasoning.
 
----
+### 📊 Analyst Dashboard (Streamlit)
+- Real-time metrics (alert counts by severity, average Threat Score).
+- Filters by severity, status, and date range.
+- Search by filename.
+- Interactive **Alert Timeline** (Plotly scatter: time × severity, sized by Threat Score).
+- **Statistics panel** — severity distribution, alerts by hour, top detected extensions.
+- **Threat Details** view per alert, including a Threat Score gauge.
+- **IOC Database panel** — browse all known threat intelligence indicators, independent of triggered alerts.
+- **CSV / PDF report export**, respecting active filters.
+- Custom "Redstone" dark theme with a pixel-art accent header.
 
-# 🖥️ Dashboard
+### 🌐 Optional Integrations (free, disabled by default)
+- **Creeper Alert (Discord Webhook)** — real-time notification for HIGH/CRITICAL detections.
+- **VirusTotal Lookup** — cross-checks HIGH/CRITICAL file hashes against 70+ AV engines via the free public API.
 
-O Dashboard permite visualizar rapidamente todas as detecções realizadas pelo Redstone SOC.
-
-Atualmente possui:
-
-- Dashboard em tempo real
-- Métricas de severidade
-- Lista de alertas
-- Busca por arquivo
-- Timeline de eventos
-- Detalhes completos do alerta
-- MITRE ATT&CK
-- Recommendation
+Both integrations run as safe no-ops when not configured — the core system never depends on them.
 
 ---
 
-# 📁 Estrutura do Projeto
+## 🛠️ Tech Stack
 
-```text
-Redstone-SOC
-│
-├── alerts/
-├── config/
-├── dashboard/
-├── samples/
-├── src/
-│   ├── alert_engine.py
-│   ├── detection_engine.py
-│   ├── file_analyzer.py
-│   ├── hash_engine.py
-│   ├── observer.py
-│   ├── threat_intelligence.py
-│   └── utils.py
-│
-├── main.py
-├── requirements.txt
-└── README.md
-```
+| Layer | Technology |
+|---|---|
+| Language | Python 3.x |
+| File System Monitoring | `watchdog` |
+| Dashboard | `streamlit` |
+| Charts | `plotly` |
+| Data Handling | `pandas`, JSON |
+| PDF Reports | `fpdf2` |
+| External Intel | VirusTotal Public API v3 |
+| Notifications | Discord Webhooks |
 
 ---
 
-# 🎮 Por que Minecraft?
+## 🚀 Getting Started
 
-O projeto utiliza uma identidade visual inspirada em Minecraft para tornar o aprendizado mais divertido.
+### Prerequisites
+Python 3.10+ installed on your system.
 
-Alguns elementos utilizados:
-
-- ⛏️ Redstone SOC
-- 👀 Observer Block
-- ⚡ Redstone Signals
-- 🚨 Creeper Alerts (planejado)
-
-Assim como a Redstone automatiza mecanismos dentro do Minecraft, o Redstone SOC automatiza tarefas comuns de um Security Operations Center.
-
----
-
-# 🚀 Como executar
-
-## Clone o projeto
+### Installation
 
 ```bash
 git clone https://github.com/DanielJJunior/Redstone-SOC.git
 cd Redstone-SOC
-```
 
----
-
-## Crie um ambiente virtual
-
-Windows
-
-```bash
 python -m venv .venv
-```
-
-Linux
-
-```bash
-python3 -m venv .venv
-```
-
----
-
-## Ative o ambiente
-
-Windows
-
-```bash
+# Windows
 .venv\Scripts\activate
-```
-
-Linux
-
-```bash
+# Linux / macOS
 source .venv/bin/activate
-```
 
----
-
-## Instale as dependências
-
-```bash
 pip install -r requirements.txt
 ```
 
----
-
-## Execute o monitor
+### Running the Observer (real-time monitoring)
 
 ```bash
 python main.py
 ```
+This watches the `samples/` folder for new files and generates alerts in `alerts/`.
 
----
-
-## Execute o Dashboard
-
-```bash
-streamlit run dashboard/app.py
-```
-
----
-
-# 📌 Roadmap
-
-## v1.0
-
-- ✅ Monitoramento em tempo real
-- ✅ Hash SHA256
-- ✅ IOC Detection
-- ✅ Dashboard
-- ✅ MITRE
-- ✅ Recommendations
-
-## Próximas versões
-
-- 🎯 Threat Score
-- 📊 Dashboard com Plotly
-- 🦠 IOC Database expandida
-- 📄 Exportação de relatórios
-- 💬 Discord Webhook
-- 🌐 Integração opcional com VirusTotal
-- 📈 Estatísticas avançadas
-- 🎮 Mais elementos inspirados em Minecraft
-
----
-
-# 🛠️ Tecnologias
-
-- Python
-- Streamlit
-- Watchdog
-- JSON
-- Hashlib
-- Plotly (em evolução)
-
----
-
-# 📚 Conceitos abordados
-
-- Security Operations Center (SOC)
-- Blue Team
-- Detection Engineering
-- Threat Intelligence
-- File Integrity Monitoring
-- SHA-256 Hashing
-- Indicators of Compromise (IOCs)
-- MITRE ATT&CK
-- Python Automation
-
----
-
-# 🤝 Contribuições
-
-Sugestões, melhorias e feedbacks são sempre bem-vindos.
-
-Caso tenha alguma ideia para evoluir o Redstone SOC, fique à vontade para abrir uma Issue ou Pull Request.
-
----
-
-# 📄 Licença
-
-Este projeto está licenciado sob a licença MIT.
-
----
-
-# 🇺🇸 English
-
-## 🛡️ Redstone SOC
-
-Redstone SOC is a lightweight, Minecraft-inspired Security Operations Center built in Python.
-
-The project was created to practice and demonstrate hands-on skills in Security Operations, Blue Team activities and Detection Engineering.
-
-It monitors directories in real time, analyzes files, calculates SHA-256 hashes, searches a Threat Intelligence database, detects Indicators of Compromise (IOCs), generates structured JSON alerts and displays all collected information through a Streamlit Dashboard.
-
-The entire project was designed using only free technologies with a strong focus on clean architecture, modularity and learning.
-
----
-
-# 🎯 Goals
-
-- Practice Blue Team concepts
-- Learn Detection Engineering
-- Build a practical Python security project
-- Create a portfolio project
-- Continuously improve with new features
-
----
-
-# ✨ Current Features
-
-- ✅ Real-time directory monitoring
-- ✅ Watchdog Observer
-- ✅ Automatic file analysis
-- ✅ SHA-256 hashing
-- ✅ Filename IOC detection
-- ✅ Hash IOC detection
-- ✅ Executable extension detection
-- ✅ Threat Intelligence database
-- ✅ Decoupled IOC store
-- ✅ MITRE ATT&CK mapping
-- ✅ Incident response recommendations
-- ✅ JSON alert generation
-- ✅ Alert history
-- ✅ Streamlit Dashboard
-- ✅ Search alerts
-- ✅ Timeline
-- ✅ Severity metrics
-- ✅ Threat details visualization
-
----
-
-# 🚀 Getting Started
-
-Clone the repository
-
-```bash
-git clone https://github.com/DanielJJunior/Redstone-SOC.git
-cd Redstone-SOC
-```
-
-Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-Run the monitor
-
-```bash
-python main.py
-```
-
-Run the dashboard
+### Running the Dashboard
 
 ```bash
 streamlit run dashboard/app.py
 ```
+Run this from the project root, not from inside `dashboard/`.
 
 ---
 
-# 🛠️ Tech Stack
+## ⚙️ Optional Configuration (Discord & VirusTotal)
 
-- Python
-- Streamlit
-- Watchdog
-- JSON
-- Hashlib
-- Plotly (planned)
+Both integrations are **free** and **fully optional**. The system works normally without them.
 
----
+1. Copy the example settings file:
+```bash
+   cp config/settings.example.json config/settings.json
+```
+2. Fill in the values you want to use:
+```json
+   {
+       "discord_webhook_url": "https://discord.com/api/webhooks/...",
+       "virustotal_api_key": "your_virustotal_api_key"
+   }
+```
+3. `config/settings.json` is git-ignored — never commit real credentials.
 
-# 📚 Concepts Covered
-
-- Security Operations Center
-- Blue Team
-- Detection Engineering
-- Threat Intelligence
-- File Integrity Monitoring
-- SHA-256 Hashing
-- MITRE ATT&CK
-- Indicators of Compromise (IOCs)
+- **Discord webhook**: Channel Settings → Integrations → Webhooks → New Webhook.
+- **VirusTotal API key**: create a free account at [virustotal.com](https://www.virustotal.com), then Profile → API Key. Public API is limited to 4 requests/minute — Redstone SOC only queries HIGH/CRITICAL detections to respect this quota.
 
 ---
 
-# 📌 Roadmap
+## 🗃️ About the IOC Database
 
-Upcoming features include:
+`config/iocs.json` is a **demonstration threat intelligence base**, built to showcase realistic detection categories: credential dumping, lateral movement, C2 frameworks, reconnaissance tools, remote access abuse, and ransomware indicators — each mapped to a MITRE ATT&CK technique.
 
-- Threat Score
-- Plotly Dashboard
-- IOC Database Expansion
-- Discord Webhook
-- VirusTotal Integration
-- Report Export
-- Advanced Statistics
+It also includes the **official EICAR test file hash** (the antivirus industry's standard, safe test signature), allowing anyone to validate the hash-detection engine without using real malware. The remaining demo hashes are clearly placeholder values, not live threat feed data.
 
 ---
 
-# 📄 License
+## 📁 Project Structure
+Redstone-SOC/
+├── main.py # Entry point — starts the Observer
+├── config/
+│ ├── iocs.json # Threat intelligence database
+│ └── settings.example.json # Template for optional integrations
+├── src/
+│ ├── observer.py # Watchdog event handler
+│ ├── file_analyzer.py # File metadata extraction
+│ ├── hash_engine.py # SHA-256 hashing
+│ ├── threat_intelligence.py# IOC lookups
+│ ├── detection_engine.py # Detection logic + Threat Score
+│ ├── alert_engine.py # Alert generation & persistence
+│ ├── notifier.py # Discord webhook (Creeper Alert)
+│ ├── virustotal.py # VirusTotal integration
+│ ├── reporter.py # CSV/PDF report generation
+│ └── utils.py
+├── dashboard/
+│ ├── app.py # Streamlit dashboard
+│ └── dashboard_utils.py # Alert loading & statistics
+├── .streamlit/config.toml # Redstone visual theme
+├── samples/ # Watched folder (test files go here)
+└── alerts/ # Generated alert JSONs
+---
 
-Licensed under the MIT License.
+## 📜 License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+## 👤 Author
+
+**Daniel Junior**
+Built as a hands-on portfolio project to demonstrate practical Information Security concepts.

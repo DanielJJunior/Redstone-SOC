@@ -7,14 +7,13 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.express as px
 
 from dashboard_utils import DashboardLoader
 from src.reporter import ReportGenerator
 from src.threat_intelligence import ThreatIntelligence
 
 # ==========================================
-# Shared severity constants (Day 24 cleanup)
+# Shared severity constants (Day 24)
 # ==========================================
 
 SEVERITY_ORDER = ["INFO", "MEDIUM", "HIGH", "CRITICAL"]
@@ -33,6 +32,8 @@ SEVERITY_ICONS = {
     "INFO": "🟢"
 }
 
+REDSTONE_RED = "#FF4C4C"
+
 loader = DashboardLoader()
 
 alerts = loader.load_alerts()
@@ -44,10 +45,83 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("⛏️ Redstone SOC")
-st.caption("Minecraft-inspired Security Operations Center")
 
-st.divider()
+# ==========================================
+# Visual Theme (Day 26)
+# ==========================================
+
+def inject_custom_css():
+
+    st.markdown(
+        f"""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        .redstone-banner {{
+            border-bottom: 3px solid {REDSTONE_RED};
+            padding-bottom: 14px;
+            margin-bottom: 10px;
+        }}
+
+        .redstone-banner h1 {{
+            font-family: 'Press Start 2P', monospace;
+            font-size: 26px;
+            color: {REDSTONE_RED};
+            margin-bottom: 6px;
+        }}
+
+        .redstone-banner p {{
+            font-family: monospace;
+            color: #AAAAAA;
+            font-size: 14px;
+            margin: 0;
+        }}
+
+        h2, h3 {{
+            font-family: 'Press Start 2P', monospace !important;
+            font-size: 16px !important;
+            color: {REDSTONE_RED} !important;
+        }}
+
+        [data-testid="stMetric"] {{
+            background-color: #2A2A2E;
+            border: 1px solid #3A3A3E;
+            border-radius: 10px;
+            padding: 12px 8px;
+        }}
+
+        .stButton>button,
+        [data-testid="stDownloadButton"] button {{
+            border: 1px solid {REDSTONE_RED};
+            border-radius: 6px;
+        }}
+
+        .stButton>button:hover,
+        [data-testid="stDownloadButton"] button:hover {{
+            border-color: {REDSTONE_RED};
+            color: {REDSTONE_RED};
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def render_banner():
+
+    st.markdown(
+        """
+        <div class="redstone-banner">
+            <h1>⛏️ REDSTONE SOC</h1>
+            <p>Minecraft-inspired Security Operations Center</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+inject_custom_css()
+render_banner()
 
 # ==========================================
 # Metrics
@@ -246,7 +320,7 @@ else:
         hour_bar = go.Figure(go.Bar(
             x=[f"{h:02d}h" for h in hourly_counts.index],
             y=hourly_counts.values,
-            marker=dict(color="#e67e22")
+            marker=dict(color=REDSTONE_RED)
         ))
 
         hour_bar.update_layout(
@@ -351,6 +425,74 @@ else:
     # Threat Details
     # ==========================================
 
+    st.subheader("🚨 Threat Details")
+
+    selected = st.selectbox(
+        "Select an alert",
+        table["file_name"]
+    )
+
+    alert = table[
+        table["file_name"] == selected
+    ].iloc[0]
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.write(f"**📄 File:** {alert['file_name']}")
+        st.write(f"**🚨 Severity:** {alert['severity']}")
+        st.write(f"**📌 Status:** {alert['status']}")
+        st.write(f"**💬 Reason:** {alert['reason']}")
+
+        st.write(
+            f"**🎯 MITRE:** {alert.get('mitre', 'N/A')}"
+        )
+
+    with col2:
+
+        st.write(f"**🕒 Timestamp:** {alert['timestamp']}")
+        st.write(f"**🔐 SHA256:** {alert['sha256']}")
+        st.write(f"**📂 Path:** {alert['path']}")
+        st.write(f"**📦 Size:** {alert['size']} bytes")
+
+    st.divider()
+
+    # ==========================================
+    # Threat Score Gauge (Redstone Power Level)
+    # ==========================================
+
+    st.subheader("⚡ Redstone Power Level (Threat Score)")
+
+    threat_score = alert.get("threat_score", 0)
+    if pd.isna(threat_score):
+        threat_score = 0
+
+    gauge = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=threat_score,
+        number={"suffix": " / 100"},
+        gauge={
+            "axis": {"range": [0, 100]},
+            "bar": {"color": "#8B0000"},
+            "steps": [
+                {"range": [0, 30], "color": SEVERITY_COLORS["INFO"]},
+                {"range": [30, 60], "color": SEVERITY_COLORS["MEDIUM"]},
+                {"range": [60, 80], "color": SEVERITY_COLORS["HIGH"]},
+                {"range": [80, 100], "color": SEVERITY_COLORS["CRITICAL"]}
+            ]
+        }
+    ))
+
+    gauge.update_layout(
+        height=280,
+        margin=dict(t=30, b=10, l=30, r=30)
+    )
+
+    st.plotly_chart(gauge, use_container_width=True)
+
+    st.divider()
+
     st.subheader("🛡 Recommendation")
 
     recommendation = alert.get(
@@ -401,50 +543,6 @@ else:
 
         else:
             st.info(vt_result.get("message", "This file hash was not found in VirusTotal's database."))
-
-    # ==========================================
-    # Threat Score Gauge (Redstone Power Level)
-    # ==========================================
-
-    st.subheader("⚡ Redstone Power Level (Threat Score)")
-
-    threat_score = alert.get("threat_score", 0)
-    if pd.isna(threat_score):
-        threat_score = 0
-
-    gauge = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=threat_score,
-        number={"suffix": " / 100"},
-        gauge={
-            "axis": {"range": [0, 100]},
-            "bar": {"color": "#8B0000"},
-            "steps": [
-                {"range": [0, 30], "color": SEVERITY_COLORS["INFO"]},
-                {"range": [30, 60], "color": SEVERITY_COLORS["MEDIUM"]},
-                {"range": [60, 80], "color": SEVERITY_COLORS["HIGH"]},
-                {"range": [80, 100], "color": SEVERITY_COLORS["CRITICAL"]}
-            ]
-        }
-    ))
-
-    gauge.update_layout(
-        height=280,
-        margin=dict(t=30, b=10, l=30, r=30)
-    )
-
-    st.plotly_chart(gauge, use_container_width=True)
-
-    st.divider()
-
-    st.subheader("🛡 Recommendation")
-
-    recommendation = alert.get(
-        "recommendation",
-        "No recommendation available."
-    )
-
-    st.info(recommendation)
 
 st.divider()
 
