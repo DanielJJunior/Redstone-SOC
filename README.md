@@ -1,18 +1,10 @@
 # ⛏️ Redstone SOC
 
 <p align="center">
-  <img src="assets/banner.png" alt="Redstone SOC Banner" width="100%">
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white">
   <img src="https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white">
   <img src="https://img.shields.io/badge/License-MIT-green">
   <img src="https://img.shields.io/badge/Status-Active-brightgreen">
-</p>
-
-<p align="center">
-  🇧🇷 <a href="README.pt-BR.md">Leia em Português</a>
 </p>
 
 A lightweight, Minecraft-inspired **Security Operations Center (SOC)** and **File Integrity/Threat Detection Engine** built in Python.
