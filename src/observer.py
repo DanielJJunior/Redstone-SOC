@@ -9,6 +9,7 @@ from src.detection_engine import DetectionEngine
 from src.file_analyzer import FileAnalyzer
 from src.hash_engine import HashEngine
 from src.notifier import DiscordNotifier
+from src.virustotal import VirusTotalClient
 from src.utils import format_size
 
 # ==========================================
@@ -20,8 +21,10 @@ detector = DetectionEngine()
 hash_engine = HashEngine()
 alert_engine = AlertEngine()
 notifier = DiscordNotifier()
+vt_client = VirusTotalClient()
 
 NOTIFY_SEVERITIES = ("HIGH", "CRITICAL")
+VT_LOOKUP_SEVERITIES = ("HIGH", "CRITICAL")
 
 # ==========================================
 # Banner
@@ -54,10 +57,17 @@ class ObserverBlock(FileSystemEventHandler):
             sha256
         )
 
+        # VirusTotal lookup (Day 25) - only for HIGH/CRITICAL, only if enabled
+        vt_result = None
+
+        if result["severity"] in VT_LOOKUP_SEVERITIES and vt_client.is_enabled():
+            vt_result = vt_client.lookup_hash(sha256)
+
         alert_file, alert_data = alert_engine.generate_alert(
             info,
             result,
-            sha256
+            sha256,
+            vt_result
         )
 
         detection_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -83,6 +93,20 @@ class ObserverBlock(FileSystemEventHandler):
         # New fields (Day 14)
         print(f"🎯 MITRE     : {result.get('mitre', 'N/A')}")
         print(f"🛡 Recommendation : {result.get('recommendation', 'N/A')}")
+
+        # VirusTotal output (Day 25)
+        if vt_result:
+
+            if vt_result.get("found"):
+                print(
+                    f"🧪 VirusTotal : {vt_result['malicious']} malicious / "
+                    f"{vt_result['suspicious']} suspicious "
+                    f"(of {vt_result['malicious'] + vt_result['suspicious'] + vt_result['harmless'] + vt_result['undetected']} engines)"
+                )
+            elif vt_result.get("error"):
+                print(f"🧪 VirusTotal : ⚠️ {vt_result['error']}")
+            else:
+                print(f"🧪 VirusTotal : {vt_result.get('message', 'Not found.')}")
 
         # Creeper Alert - Discord notification (Day 18)
         if result["severity"] in NOTIFY_SEVERITIES and notifier.is_enabled():
@@ -119,6 +143,11 @@ def start_observer(path):
         print("📨 Discord notifications: ENABLED")
     else:
         print("📨 Discord notifications: disabled (no webhook configured)")
+
+    if vt_client.is_enabled():
+        print("🧪 VirusTotal lookup: ENABLED (HIGH/CRITICAL only)")
+    else:
+        print("🧪 VirusTotal lookup: disabled (no API key configured)")
 
     print("⏳ Waiting for new files...\n")
 

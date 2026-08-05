@@ -27,6 +27,97 @@
             "severity": "CRITICAL",
             "mitre": "T1021",
             "recommendation": "Investigate remote execution activity and isolate the endpoint if necessary."
+        },
+        {
+            "name": "procdump64.exe",
+            "family": "Credential Dumping (LSASS)",
+            "severity": "CRITICAL",
+            "mitre": "T1003.001",
+            "recommendation": "Check if LSASS memory was dumped. Isolate the host and rotate credentials."
+        },
+        {
+            "name": "wce.exe",
+            "family": "Windows Credential Editor",
+            "severity": "CRITICAL",
+            "mitre": "T1003",
+            "recommendation": "Treat as active credential theft. Isolate the host immediately."
+        },
+        {
+            "name": "rubeus.exe",
+            "family": "Kerberos Abuse",
+            "severity": "CRITICAL",
+            "mitre": "T1558",
+            "recommendation": "Investigate for Kerberoasting or ticket forgery. Review domain controller logs."
+        },
+        {
+            "name": "bloodhound.exe",
+            "family": "Active Directory Reconnaissance",
+            "severity": "HIGH",
+            "mitre": "T1482",
+            "recommendation": "Check for unauthorized AD enumeration. Review the source account's privileges."
+        },
+        {
+            "name": "lazagne.exe",
+            "family": "Credential Harvesting",
+            "severity": "HIGH",
+            "mitre": "T1555",
+            "recommendation": "Determine what credential stores were accessed. Rotate exposed credentials."
+        },
+        {
+            "name": "powersploit.ps1",
+            "family": "Post-Exploitation Framework",
+            "severity": "HIGH",
+            "mitre": "T1059.001",
+            "recommendation": "Review PowerShell execution history and script block logging on the host."
+        },
+        {
+            "name": "empire.ps1",
+            "family": "Command and Control Framework",
+            "severity": "CRITICAL",
+            "mitre": "T1059.001",
+            "recommendation": "Treat as an active C2 implant. Isolate the host and inspect outbound connections."
+        },
+        {
+            "name": "cobaltstrike_beacon.exe",
+            "family": "Command and Control Beacon",
+            "severity": "CRITICAL",
+            "mitre": "T1071",
+            "recommendation": "Isolate the host immediately and inspect network traffic for C2 patterns."
+        },
+        {
+            "name": "anydesk.exe",
+            "family": "Unauthorized Remote Access Tool",
+            "severity": "MEDIUM",
+            "mitre": "T1219",
+            "recommendation": "Confirm whether remote access was authorized by IT/Security before allowing it to run."
+        },
+        {
+            "name": "teamviewer_qs.exe",
+            "family": "Unauthorized Remote Access Tool",
+            "severity": "MEDIUM",
+            "mitre": "T1219",
+            "recommendation": "Confirm whether remote access was authorized by IT/Security before allowing it to run."
+        },
+        {
+            "name": "svchost32.exe",
+            "family": "Process Masquerading",
+            "severity": "HIGH",
+            "mitre": "T1036",
+            "recommendation": "Legitimate svchost.exe does not run from user-writable folders. Investigate immediately."
+        },
+        {
+            "name": "wannacry.exe",
+            "family": "Ransomware",
+            "severity": "CRITICAL",
+            "mitre": "T1486",
+            "recommendation": "Disconnect the host from the network immediately. Do not pay ransom. Restore from backup."
+        },
+        {
+            "name": "DECRYPT_INSTRUCTIONS.txt",
+            "family": "Ransomware Note",
+            "severity": "CRITICAL",
+            "mitre": "T1486",
+            "recommendation": "This is a strong indicator of an active ransomware incident. Isolate the host and activate the incident response plan."
         }
     ],
 
@@ -35,7 +126,14 @@
         ".dll",
         ".ps1",
         ".bat",
-        ".vbs"
+        ".vbs",
+        ".scr",
+        ".js",
+        ".jar",
+        ".msi",
+        ".hta",
+        ".cmd",
+        ".reg"
     ],
 
     "safe_extensions": [
@@ -44,16 +142,44 @@
         ".jpg",
         ".jpeg",
         ".pdf",
-        ".docx"
+        ".docx",
+        ".csv",
+        ".xlsx",
+        ".pptx",
+        ".md",
+        ".gif",
+        ".mp3",
+        ".mp4"
     ],
 
-    "hashes":[
+    "hashes": [
         {
-            "sha256":"1234567890abcdef",
-            "family":"Mimikatz",
-            "severity":"CRITICAL",
-            "mitre":"T1003",
-            "recommendation":"Immediately isolate the host and investigate credential theft."
+            "sha256": "1234567890abcdef",
+            "family": "Mimikatz",
+            "severity": "CRITICAL",
+            "mitre": "T1003",
+            "recommendation": "Immediately isolate the host and investigate credential theft."
+        },
+        {
+            "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+            "family": "EICAR Antivirus Test File",
+            "severity": "MEDIUM",
+            "mitre": "N/A",
+            "recommendation": "This is the official industry-standard EICAR test signature, not real malware. It confirms Redstone SOC's hash detection engine is working correctly."
+        },
+        {
+            "sha256": "aaaaaaaaaaaaaaaa",
+            "family": "TrickBot (Demo Sample)",
+            "severity": "HIGH",
+            "mitre": "T1071",
+            "recommendation": "Demo entry for testing hash-based detection. Not a real active indicator."
+        },
+        {
+            "sha256": "bbbbbbbbbbbbbbbb",
+            "family": "Emotet (Demo Sample)",
+            "severity": "CRITICAL",
+            "mitre": "T1566",
+            "recommendation": "Demo entry for testing hash-based detection. Not a real active indicator."
         }
     ]
 }

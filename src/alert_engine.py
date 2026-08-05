@@ -10,7 +10,7 @@ class AlertEngine:
         self.alert_folder = Path("alerts")
         self.alert_folder.mkdir(exist_ok=True)
 
-    def generate_alert(self, info, detection, sha256):
+    def generate_alert(self, info, detection, sha256, vt_result=None):
 
         timestamp = datetime.now()
 
@@ -41,7 +41,9 @@ class AlertEngine:
             "recommendation": detection.get(
                 "recommendation",
                 "No recommendation available."
-            )
+            ),
+
+            "virustotal": vt_result
         }
 
         filename = f"alert_{timestamp.strftime('%Y%m%d_%H%M%S')}.json"
