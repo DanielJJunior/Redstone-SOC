@@ -133,32 +133,6 @@ Both integrations are **free** and **fully optional**. The system works normally
 It also includes the **official EICAR test file hash** (the antivirus industry's standard, safe test signature), allowing anyone to validate the hash-detection engine without using real malware. The remaining demo hashes are clearly placeholder values, not live threat feed data.
 
 ---
-
-## 📁 Project Structure
-Redstone-SOC/
-├── main.py # Entry point — starts the Observer
-├── config/
-│ ├── iocs.json # Threat intelligence database
-│ └── settings.example.json # Template for optional integrations
-├── src/
-│ ├── observer.py # Watchdog event handler
-│ ├── file_analyzer.py # File metadata extraction
-│ ├── hash_engine.py # SHA-256 hashing
-│ ├── threat_intelligence.py# IOC lookups
-│ ├── detection_engine.py # Detection logic + Threat Score
-│ ├── alert_engine.py # Alert generation & persistence
-│ ├── notifier.py # Discord webhook (Creeper Alert)
-│ ├── virustotal.py # VirusTotal integration
-│ ├── reporter.py # CSV/PDF report generation
-│ └── utils.py
-├── dashboard/
-│ ├── app.py # Streamlit dashboard
-│ └── dashboard_utils.py # Alert loading & statistics
-├── .streamlit/config.toml # Redstone visual theme
-├── samples/ # Watched folder (test files go here)
-└── alerts/ # Generated alert JSONs
----
-
 ## 📜 License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for details.
