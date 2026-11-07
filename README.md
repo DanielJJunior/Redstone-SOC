@@ -32,6 +32,7 @@ The primary goal of **Redstone SOC** is to practice and demonstrate hands-on con
 - **Layered IOC Detection** — hash match → known filename → dangerous extension → safe extension → unknown.
 - **Threat Score ("Redstone Power Level")** — a 0–100 risk score combining severity with detection-method confidence.
 - **MITRE ATT&CK Mapping & Recommendations** for every detection.
+- **ATT&CK Navigator Export** — turns detection rules (coverage) and triggered alerts into heatmap layers for the official MITRE ATT&CK Navigator.
 - **Structured JSON Alerts** with full metadata, timestamps, severity, and reasoning.
 
 ### 📊 Analyst Dashboard (Streamlit)
@@ -42,7 +43,7 @@ The primary goal of **Redstone SOC** is to practice and demonstrate hands-on con
 - **Statistics panel** — severity distribution, alerts by hour, top detected extensions.
 - **Threat Details** view per alert, including a Threat Score gauge.
 - **IOC Database panel** — browse all known threat intelligence indicators, independent of triggered alerts.
-- **CSV / PDF report export**, respecting active filters.
+- **CSV / PDF / ATT&CK Navigator layer export**, respecting active filters.
 - Custom "Redstone" dark theme with a pixel-art accent header.
 
 ### 🌐 Optional Integrations (free, disabled by default)
@@ -101,6 +102,17 @@ This watches the `samples/` folder for new files and generates alerts in `alerts
 streamlit run dashboard/app.py
 ```
 Run this from the project root, not from inside `dashboard/`.
+
+### Exporting ATT&CK Navigator Layers
+
+```bash
+python export_attack_layer.py            # coverage + alerts
+python export_attack_layer.py coverage   # what the detection rules cover
+python export_attack_layer.py alerts     # what was actually triggered
+```
+Layers are saved in `reports/`. Open the [MITRE ATT&CK Navigator](https://mitre-attack.github.io/attack-navigator/) → **Open Existing Layer** → **Upload from local** and pick the JSON file to see the heatmap.
+
+The dashboard also has an **🗺️ Export ATT&CK Layer** button that exports the currently filtered alerts.
 
 ---
 
