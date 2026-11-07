@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 
 from dashboard_utils import DashboardLoader
 from src.reporter import ReportGenerator
+from src.attack_navigator import AttackNavigatorExporter
 from src.threat_intelligence import ThreatIntelligence
 
 # ==========================================
@@ -246,7 +247,7 @@ else:
         for severity in SEVERITY_ORDER
     }
 
-    exp1, exp2 = st.columns(2)
+    exp1, exp2, exp3 = st.columns(3)
 
     with exp1:
         st.download_button(
@@ -264,6 +265,19 @@ else:
             file_name="redstone_soc_report.pdf",
             mime="application/pdf",
             use_container_width=True
+        )
+
+    # ATT&CK Navigator layer export (Day 26)
+    with exp3:
+        st.download_button(
+            "🗺️ Export ATT&CK Layer",
+            data=AttackNavigatorExporter.to_json(
+                AttackNavigatorExporter.alerts_layer(filtered_alerts)
+            ),
+            file_name="redstone_alerts_layer.json",
+            mime="application/json",
+            use_container_width=True,
+            help="Open in MITRE ATT&CK Navigator -> Open Existing Layer -> Upload from local"
         )
 
     st.divider()
